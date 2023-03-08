@@ -13,11 +13,11 @@ struct Pos
 class Piece
 {
 public:
-    Piece(int);
+    Piece(int, int, int);
     Piece();
     ~Piece();
     Pos getPos();
-    void setPos(Pos);
+    void setPos(Pos, Board&);
     bool checkMove(Pos, Board);
 
     // Function for each type of piece that adds the possible moves to the vector

@@ -1,8 +1,11 @@
 #include "Piece.h"
 
-Piece::Piece(int id)
+Piece::Piece(int id, int x, int y)
 {
     this->id = id;
+    pos.x = x;
+    pos.y = y;
+
 }
 
 Piece::Piece()
@@ -20,20 +23,21 @@ Pos Piece::getPos()
     return pos;
 }
 
-void Piece::setPos(Pos pos)
+void Piece::setPos(Pos pos, Board &board)
 {
     this->pos = pos;
+    board.setPiece(pos.x, pos.y, id);
 }
 
 void Piece::addPawnMoves(Pos mv, Board board)
 {
     // check if there's at least a piece in front of the pawn
-    if (board.table[pos.x][pos.y + (1*board.turn)] == 0) {
+    if (board.table[pos.x][pos.y + (-1*board.turn)] == 0) {
         // check if the pawn is at the starting position
         if (pos.y == 1 || pos.y == 6) {
             // check if there's a piece 2 squares in front of the pawn
-            if (board.table[pos.x][pos.y + (2*board.turn)] == 0) {
-                moves.push_back({pos.x, pos.y + (2*board.turn)});
+            if (board.table[pos.x][pos.y + (-2*board.turn)] == 0) {
+                moves.push_back({pos.x, pos.y + (-2*board.turn)});
             }
         }
         moves.push_back({pos.x, pos.y + (1*board.turn)});
@@ -74,7 +78,7 @@ void Piece::addRookMoves(Pos mv, Board board)
             
 }
 
-void Piece::addKingMoves(Pos pos, Board board)
+void Piece::addKnightMoves(Pos pos, Board board)
 {
     moves.push_back({pos.x + 1, pos.y + 2});
     moves.push_back({pos.x + 1, pos.y - 2});
@@ -129,10 +133,19 @@ void Piece::addBishopMoves(Pos pos, Board board)
     }
 }
 
+void Piece::addQueenMoves(Pos pos, Board board)
+{
+    addRookMoves(pos, board);
+    addBishopMoves(pos, board);
+}
+
 void Piece::getMoves(Board board)
 {
     std::vector <Pos> moves;
-    switch(id) {
+    int check_id = id;
+    if (id < 0) check_id = -id;
+
+    switch(check_id) {
         case 1:
             addPawnMoves(pos, board);
         break;
@@ -150,8 +163,6 @@ void Piece::getMoves(Board board)
             break;
         case 5:
             // Queen
-            addRookMoves(pos, board);
-            addBishopMoves(pos, board);
 
             break;
         case 6:
