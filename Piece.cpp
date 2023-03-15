@@ -40,7 +40,23 @@ void Piece::addPawnMoves(Pos mv, Board board)
                 moves.push_back({pos.x, pos.y + (-2*board.turn)});
             }
         }
-        moves.push_back({pos.x, pos.y + (1*board.turn)});
+        moves.push_back({pos.x, pos.y + (-1*board.turn)});
+    }
+
+    // check if there's an ennemy piece on the four diagonal squares
+    if (pos.x != 0) {
+        if (board.table[pos.x - 1][pos.y + (-1*board.turn)] != 0) {
+            if (!board.checkTurn(board.table[pos.x - 1][pos.y + (-1*board.turn)])) {
+                kills.push_back({pos.x - 1, pos.y + (-1*board.turn)});
+            }
+        }
+    } 
+    if (pos.x != 7) {
+        if (board.table[pos.x + 1][pos.y + (-1*board.turn)] != 0) {
+            if (!board.checkTurn(board.table[pos.x + 1][pos.y + (-1*board.turn)])) {
+                kills.push_back({pos.x + 1, pos.y + (-1*board.turn)});
+            }
+        }
     }
 }
 
@@ -48,32 +64,55 @@ void Piece::addRookMoves(Pos mv, Board board)
 {
         // Rook
 
-    for (int i = pos.y; i < 8; i++) {
+    for (int i = pos.y+1; i < 8; i++) {
         Pos move1 = {pos.x, i};
         if (board.table[move1.x][move1.y] == 0){
             moves.push_back(move1);
-        } else break;
+        } else 
+        {
+            if (!board.checkTurn(board.table[move1.x][move1.y])) {
+                kills.push_back(move1);
+            }
+            break;
+        }
     }
 
-    for (int i = pos.x; i < 8; i++) {
+    for (int i = pos.x+1; i < 8; i++) {
         Pos move1 = {i, pos.y};
         if (board.table[move1.x][move1.y] == 0 && move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0) {
             moves.push_back(move1);
-        } else break;
+        } else 
+        {
+            if (!board.checkTurn(board.table[move1.x][move1.y])) {
+                kills.push_back(move1);
+            }
+            break;
+        }
     }
 
-    for (int i = pos.x; i >= 0 ; i--) {
+    for (int i = pos.x-1; i >= 0 ; i--) {
         Pos move1 = {i, pos.y};
         if (board.table[move1.x][move1.y] == 0 && move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0) {
             moves.push_back(move1);
-        } else break;
+        } else 
+        {
+            if (!board.checkTurn(board.table[move1.x][move1.y])) {
+                kills.push_back(move1);
+            }
+            break;
+        }
     }
 
-    for (int i = pos.y; i >= 0 ; i--) {
+    for (int i = pos.y-1; i >= 0 ; i--) {
         Pos move1 = {pos.x, i};
         if (board.table[move1.x][move1.y] == 0 && move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0) {
             moves.push_back(move1);
-        } else break;
+        } else {
+            if (!board.checkTurn(board.table[move1.x][move1.y])) {
+                kills.push_back(move1);
+            }
+            break;
+        }
     }
             
 }
@@ -96,6 +135,7 @@ void Piece::addKnightMoves(Pos pos, Board board)
             moves.erase(moves.begin() + i);
             i--;
         } else if (board.table[moves[i].x][moves[i].y] != 0) {
+            if (board.checkTurn(board.table[moves[i].x][moves[i].y])) kills.push_back(moves[i]);
             moves.erase(moves.begin() + i);
             i--;
         }
@@ -105,31 +145,45 @@ void Piece::addKnightMoves(Pos pos, Board board)
 void Piece::addBishopMoves(Pos pos, Board board)
 {
     for (int i = 0; i < 8; i++) {
-        Pos move1 = {pos.x + i, pos.y + i};
-        if (board.table[move1.x][move1.y] == 0 && move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0) {
+        Pos move1 = {pos.x + i + 1, pos.y + i + 1};
+        if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && board.table[move1.x][move1.y] == 0) {
             moves.push_back(move1);
-        } else break;
+        } else 
+        {
+            if (!board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
+            break;
+        }
     }
 
     for (int i = 0; i < 8; i++) {
-        Pos move1 = {pos.x + i, pos.y - i};
-        if (board.table[move1.x][move1.y] == 0 && move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0) {
+        Pos move1 = {pos.x + i + 1, pos.y - i - 1};
+        if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && board.table[move1.x][move1.y] == 0) {
             moves.push_back(move1);
-        } else break;
+        } else {
+            if (!board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
+            break;
+        }
     }
 
     for (int i = 0; i < 8; i++) {
-        Pos move1 = {pos.x - i, pos.y + i};
-        if (board.table[move1.x][move1.y] == 0 && move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0) {
+        Pos move1 = {pos.x - i - 1, pos.y + i + 1};
+        if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && board.table[move1.x][move1.y] == 0) {
             moves.push_back(move1);
-        } else break;
+        } else 
+        {
+            if (!board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
+            break;
+        }
     }
 
     for (int i = 0; i < 8; i++) {
-        Pos move1 = {pos.x - i, pos.y - i};
-        if (board.table[move1.x][move1.y] == 0 && move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0) {
+        Pos move1 = {pos.x - i - 1, pos.y - i - 1};
+        if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && board.table[move1.x][move1.y] == 0) {
             moves.push_back(move1);
-        } else break;
+        } else {
+            if (!board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
+            break;
+        }
     }
 }
 
@@ -141,7 +195,6 @@ void Piece::addQueenMoves(Pos pos, Board board)
 
 void Piece::getMoves(Board board)
 {
-    std::vector <Pos> moves;
     int check_id = id;
     if (id < 0) check_id = -id;
 
@@ -163,7 +216,7 @@ void Piece::getMoves(Board board)
             break;
         case 5:
             // Queen
-
+            addQueenMoves(pos, board);
             break;
         case 6:
             // King
@@ -172,14 +225,17 @@ void Piece::getMoves(Board board)
         default:
             break;
     }
-    this->moves = moves;
 }
 
 bool Piece::checkMove(Pos move, Board board)
 {
-    getMoves(board);
     for (int i = 0; i < moves.size(); i++) {
         if (moves[i].x == move.x && moves[i].y == move.y) return true;
     }
     return false;
+}
+
+int Piece::getId()
+{
+    return id;
 }

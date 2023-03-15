@@ -32,6 +32,11 @@ int Board::getPiece(int x, int y)
     return table[x][y];
 }
 
+int Board::getTurn()
+{
+    return turn;
+}
+
 void Board::setPiece(int x, int y, int id)
 {
     table[x][y] = id;

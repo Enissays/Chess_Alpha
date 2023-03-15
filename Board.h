@@ -12,6 +12,7 @@ public:
     Board();
     ~Board();
     void switchTurn();
+    int getTurn();
     int getPiece(int, int);
     void setPiece(int, int, int);
     bool checkTurn(int);
@@ -21,6 +22,7 @@ private:
     int turn = 1;
     friend class Piece;
     friend void displayBoard(Board);
+    friend void showMoves(Board);
 };
 
 #include"Board.cpp"

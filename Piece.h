@@ -17,6 +17,7 @@ public:
     Piece();
     ~Piece();
     Pos getPos();
+    int getId();
     void setPos(Pos, Board&);
     bool checkMove(Pos, Board);
 
@@ -28,13 +29,14 @@ public:
     void addQueenMoves(Pos, Board);
     void addKingMoves(Pos, Board);
     void getMoves(Board);
+    void showMoves(Board);
 
 private:
     Pos pos;
     int id;
     std::vector <Pos> moves;
     std::vector <Pos> kills;
-
+    friend void showMoves(Piece, Board);
 };
 
 #include"Piece.cpp"
