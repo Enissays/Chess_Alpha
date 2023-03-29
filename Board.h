@@ -3,7 +3,14 @@
 
 #pragma once
 
+struct Pos
+{
+    int x;
+    int y;
+};
+
 #include<vector>
+#include <utility>
 
 // The chess board
 class Board
@@ -23,6 +30,7 @@ private:
     friend class Piece;
     friend void displayBoard(Board);
     friend void showMoves(Board);
+    std::pair<int, Pos> p_one_pieces[16];
 };
 
 #include"Board.cpp"

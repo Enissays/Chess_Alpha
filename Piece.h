@@ -4,11 +4,7 @@
 #pragma once
 #include<vector>
 #include"Board.h"
-struct Pos
-{
-    int x;
-    int y;
-};
+
 
 class Piece
 {

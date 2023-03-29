@@ -11,7 +11,14 @@ using namespace std;
 #define UP -1
 #define DOWN 1
 
+/*
+Mouvement des pièces + regles
+Régles avancés : 
+    - Promotion
+    - Prise en passant
+    - Roque (petit/grand)
 
+*/
 
 void displayBoard(Board board)
 {
@@ -23,6 +30,30 @@ void displayBoard(Board board)
                 cout << "\033[31m" << 8 - i << "\033[0m ";
             }
             switch(board.table[j][i]) {
+                // if the piece is above 20, display it in red
+                case 21:
+                    cout << "\033[31m" << "P" << "\033[0m";
+                    break;
+                
+                case 22:
+                    cout << "\033[31m" << "R" << "\033[0m";
+                    break;
+
+                case 23:
+                    cout << "\033[31m" << "N" << "\033[0m";
+                    break;
+
+                case 24:
+                    cout << "\033[31m" << "B" << "\033[0m";
+                    break;
+
+                case 25:
+                    cout << "\033[31m" << "Q" << "\033[0m";
+                    break;
+
+                case 26:   
+                    cout << "\033[31m" << "K" << "\033[0m";
+                    break;
                 // display the pieces, print in black all the black pieces
                 case -1:
                     cout << "\033[30m" << "P" << "\033[0m";
@@ -112,11 +143,18 @@ int LetterToPiece(char letter)
     }
 }
 
+
+
 void showMoves(Piece piece, Board board)
 {
     // change the piece id to 10 to show the moves
     for (int i = 0; i < piece.moves.size(); i++) {
         board.setPiece(piece.moves[i].x, piece.moves[i].y, 10);
+    }
+
+    // add 20 to the piece id that can get eaten
+    for (int i = 0; i < piece.kills.size(); i++) {
+        board.setPiece(piece.kills[i].x, piece.kills[i].y, board.getPiece(piece.kills[i].x, piece.kills[i].y) + 20);
     }
     displayBoard(board);
 }
@@ -134,7 +172,7 @@ int main()
         startPos.x = convertFromLetterToNumber(start[0]);
         startPos.y = 8 - (start[1] - '0');
 
-        
+
         // Check the moves for the piece
         Piece piece(board.getPiece(startPos.x, startPos.y), startPos.x, startPos.y);
         if (!board.checkTurn(piece.getId()) || piece.getId() == 0) 
@@ -157,7 +195,7 @@ int main()
         piece.setPos(endPos, board);
         board.setPiece(startPos.x, startPos.y, 0);
         board.switchTurn();
-        displayBoard(board);
+        displayBoard(board); 
     } while (true);
     return 0;
 }

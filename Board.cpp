@@ -17,9 +17,10 @@ Board::Board()
     };
 }
 
+
 void Board::switchTurn()
 {
-    turn *= -1;
+    turn = -turn;
 }
 
 Board::~Board()
