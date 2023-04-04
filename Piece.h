@@ -27,12 +27,15 @@ public:
     void getMoves(Board);
     void showMoves(Board);
 
+    // Function to get all moves of a board
+    vector<Pos> getAllMovesE(Board);
 private:
     Pos pos;
     int id;
     std::vector <Pos> moves;
     std::vector <Pos> kills;
     friend void showMoves(Piece, Board);
+    friend class Board;
 };
 
 #include"Piece.cpp"

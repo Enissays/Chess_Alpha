@@ -20,96 +20,26 @@ Régles avancés :
 
 */
 
-void displayBoard(Board board)
+char PieceToLetter(int p)
 {
-    cout << "Tour actuel : " << (board.getTurn() == 1 ? "blanc" : "\033[30m noir \033[0m") << endl << endl;
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            // display the line number in red
-            if (j == 0) {
-                cout << "\033[31m" << 8 - i << "\033[0m ";
-            }
-            switch(board.table[j][i]) {
-                // if the piece is above 20, display it in red
-                case 21:
-                    cout << "\033[31m" << "P" << "\033[0m";
-                    break;
-                
-                case 22:
-                    cout << "\033[31m" << "R" << "\033[0m";
-                    break;
-
-                case 23:
-                    cout << "\033[31m" << "N" << "\033[0m";
-                    break;
-
-                case 24:
-                    cout << "\033[31m" << "B" << "\033[0m";
-                    break;
-
-                case 25:
-                    cout << "\033[31m" << "Q" << "\033[0m";
-                    break;
-
-                case 26:   
-                    cout << "\033[31m" << "K" << "\033[0m";
-                    break;
-                // display the pieces, print in black all the black pieces
-                case -1:
-                    cout << "\033[30m" << "P" << "\033[0m";
-                    break;
-                case -2:
-                    cout << "\033[30m" << "R" << "\033[0m";
-                    break;
-                case -3:
-                    cout << "\033[30m" << "N" << "\033[0m";
-                    break;
-                case -4:
-                    cout << "\033[30m" << "B" << "\033[0m";
-                    break;
-                case -5:
-                    cout << "\033[30m" << "Q" << "\033[0m";
-                    break;
-                case -6:
-                    cout << "\033[30m" << "K" << "\033[0m";
-                    break;
-                case 1:
-                    cout << "P";
-                    break;
-                case 2:
-                    cout << "R";
-                    break;
-                case 3:
-                    cout << "N";
-                    break;
-                case 4:
-                    cout << "B";
-                    break;
-                case 5:
-                    cout << "Q";
-                    break;
-                case 6:
-                    cout << "K";
-                    break;
-                case 10:
-                    cout << "-";
-                    break;
-                default:
-                    cout << " ";
-            }
-            cout << " ";
-        }
-        cout << endl;
+    switch (p) 
+    {
+        case 1:
+            return 'P';
+        case 2:
+            return 'R';
+        case 3:
+            return 'N';
+        case 4:
+            return 'B';
+        case 5:
+            return 'Q';
+        case 6:
+            return 'K';
+        default:
+            return p;
     }
-    // display the column letters in blue
-    cout << "\033[34m" << "  a b c d e f g h" << "\033[0m" << endl;
 }
-
-int convertFromLetterToNumber(char letter)
-{
-    return letter - 97;
-}
-
 int LetterToPiece(char letter)
 {
     switch (letter) 
@@ -126,22 +56,52 @@ int LetterToPiece(char letter)
             return 5;
         case 'K':
             return 6;
-        case 'p':
-            return -1;
-        case 'r':
-            return -2;
-        case 'n':
-            return -3;
-        case 'b':
-            return -4;
-        case 'q':
-            return -5;
-        case 'k':
-            return -6;
         default:
             return 0;
     }
 }
+void displayBoard(Board board)
+{
+    cout << "Tour actuel : " << (board.getTurn() == 1 ? "blanc" : "\033[30m noir \033[0m") << endl << endl;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            // display the line number in red
+            if (j == 0) {
+                cout << "\033[31m" << 8 - i << "\033[0m ";
+            }
+            int p=board.getPiece(j, i);
+            if (p==10) {
+                cout << "\033[32m" << "-" << "\033[0m";
+            }
+            else if (p>=20) {
+                cout << "\033[35m" << PieceToLetter(p-20) << "\033[0m";
+            }
+            else if (p>0) {
+                cout << "\033[37m" << PieceToLetter(p) << "\033[0m";
+            }
+            else if (p<0) {
+                cout << "\033[30m" << PieceToLetter(-p) << "\033[0m";
+            }
+
+            else {
+                cout << " ";
+            }            
+            cout << " ";
+            }
+            cout << endl;
+
+        }
+
+    // display the column letters in blue
+    cout << "\033[34m" << "  a b c d e f g h" << "\033[0m" << endl;
+}
+
+int convertFromLetterToNumber(char letter)
+{
+    return letter - 97;
+}
+
+
 
 
 
@@ -154,7 +114,7 @@ void showMoves(Piece piece, Board board)
 
     // add 20 to the piece id that can get eaten
     for (int i = 0; i < piece.kills.size(); i++) {
-        board.setPiece(piece.kills[i].x, piece.kills[i].y, board.getPiece(piece.kills[i].x, piece.kills[i].y) + 20);
+        board.setPiece(piece.kills[i].x, piece.kills[i].y, board.getTurn()*-1*board.getPiece(piece.kills[i].x, piece.kills[i].y) + 20);
     }
     displayBoard(board);
 }
@@ -164,15 +124,17 @@ int main()
     Board board;
     displayBoard(board);
     do {
-        Pos startPos, endPos;
+        Pos startPos={0,0}, endPos={0,0};
         // Input asks for the start position
         cout << "Pièce de départ : ";
         string start, end;
         cin >> start;
         startPos.x = convertFromLetterToNumber(start[0]);
         startPos.y = 8 - (start[1] - '0');
+        
 
 
+        
         // Check the moves for the piece
         Piece piece(board.getPiece(startPos.x, startPos.y), startPos.x, startPos.y);
         if (!board.checkTurn(piece.getId()) || piece.getId() == 0) 

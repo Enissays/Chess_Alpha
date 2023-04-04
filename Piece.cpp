@@ -17,7 +17,21 @@ Piece::~Piece()
 {
 
 }
-
+vector<Pos> Piece::getAllMovesE(Board board) {
+    vector<Pos> moves;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (board.table[i][j] != 0) {
+                if (!board.checkTurn(board.table[i][j])) {
+                    Piece piece(i, j, board.table[i][j]);
+                    piece.getMoves(board);
+                    moves.insert(moves.end(), piece.moves.begin(), piece.moves.end());
+                }
+            }
+        }
+    }
+    return moves;
+}
 Pos Piece::getPos()
 {
     return pos;
@@ -25,8 +39,99 @@ Pos Piece::getPos()
 
 void Piece::setPos(Pos pos, Board &board)
 {
+    // Vérifie si le roi a bougé et changer la valeur de petit_roque_B et grand_roque_B ou petit_roque_N et grand_roque_N
+
+
+    // Vérifie si le joueur veut faire un petit roque ou un grand roque
+    if (id == 6) {
+        if (board.petit_roque_B && pos.x == 6 && pos.y == 7) {
+            board.setPiece(5, 7, 2);
+            board.setPiece(7, 7, 0);
+            board.setPiece(6, 7, 6);
+            board.setPiece(4, 7, 0);
+            cout << "Petit roque effectué" << endl;
+            getchar();
+        }
+        else if (board.grand_roque_B && pos.x == 2 && pos.y == 7) {
+            board.setPiece(3, 7, 2);
+            board.setPiece(0, 7, 0);
+            board.setPiece(2, 7, 6);
+            board.setPiece(4, 7, 0);
+            cout << "Grand roque effectué" << endl;
+            getchar();
+        } 
+        else 
+        {
+            board.petit_roque_B = 0;
+            board.grand_roque_B = 0;
+        }
+    }
+    else if (id == -6) {
+        if (board.petit_roque_N && pos.x == 6 && pos.y == 0) {
+            board.setPiece(5, 0, -2);
+            board.setPiece(7, 0, 0);
+            board.setPiece(6, 0, -6);
+            board.setPiece(4, 0, 0);
+            cout << "Petit roque effectué" << endl;
+            getchar();
+        }
+        else if (board.grand_roque_N && pos.x == 2 && pos.y == 0) {
+            board.setPiece(3, 0, -2);
+            board.setPiece(0, 0, 0);
+            board.setPiece(2, 0, -6);
+            board.setPiece(4, 0, 0);
+            cout << "Grand roque effectué" << endl;
+            getchar();
+        } 
+        else 
+        {
+            board.petit_roque_N = 0;
+            board.grand_roque_N = 0;
+        }
+    }
+    // Vérifie si la tour a bougé et changer la valeur de petit_roque_B ou petit_roque_N
+    else if (id == 4) {
+        if (pos.x == 0) {
+            board.grand_roque_B = 0;
+        }
+        if (pos.x == 7) {
+            board.petit_roque_B = 0;
+        }
+    }
+    else if (id == -4) {
+        if (pos.x == 0) {
+            board.grand_roque_N = 0;
+        }
+        if (pos.x == 7) {
+            board.petit_roque_N = 0;
+        }
+    }
+    else if ((id == 1 || id == -1) && (pos.y == 0 || pos.y == 7)) {
+
+           char choice;
+           cout << "En quoi voulez-vous promouvoir votre pion ? (Q/R/C/B)" << endl;
+           cin >> choice;
+              switch (choice) {
+                case 'Q':
+                     id = 5;
+                     break;
+                case 'R':
+                     id = 4;
+                     break;
+                case 'C':
+                     id = 3;
+                     break;
+                case 'B':
+                     id = 2;
+                     break;
+              }
+            board.setPiece(pos.x, pos.y, id*board.getTurn());
+            cout << "Le pion a été promu en " << choice << endl;
+            getchar();
+    } else {
+        board.setPiece(pos.x, pos.y, id);
+    }
     this->pos = pos;
-    board.setPiece(pos.x, pos.y, id);
 }
 
 void Piece::addPawnMoves(Pos mv, Board board)
@@ -150,7 +255,7 @@ void Piece::addBishopMoves(Pos pos, Board board)
             moves.push_back(move1);
         } else 
         {
-            if (!board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
+            if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && !board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
             break;
         }
     }
@@ -160,7 +265,7 @@ void Piece::addBishopMoves(Pos pos, Board board)
         if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && board.table[move1.x][move1.y] == 0) {
             moves.push_back(move1);
         } else {
-            if (!board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
+            if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && !board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
             break;
         }
     }
@@ -171,7 +276,7 @@ void Piece::addBishopMoves(Pos pos, Board board)
             moves.push_back(move1);
         } else 
         {
-            if (!board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
+            if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && !board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
             break;
         }
     }
@@ -181,7 +286,7 @@ void Piece::addBishopMoves(Pos pos, Board board)
         if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && board.table[move1.x][move1.y] == 0) {
             moves.push_back(move1);
         } else {
-            if (!board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
+            if (move1.x <= 7 && move1.x >= 0 && move1.y <= 7 && move1.y >= 0 && !board.checkTurn(board.table[move1.x][move1.y])) kills.push_back(move1);
             break;
         }
     }
@@ -191,6 +296,49 @@ void Piece::addQueenMoves(Pos pos, Board board)
 {
     addRookMoves(pos, board);
     addBishopMoves(pos, board);
+}
+
+void Piece::addKingMoves(Pos pos, Board board)
+{
+    moves.push_back({pos.x + 1, pos.y + 1});
+    moves.push_back({pos.x + 1, pos.y - 1});
+    moves.push_back({pos.x - 1, pos.y + 1});
+    moves.push_back({pos.x - 1, pos.y - 1});
+    moves.push_back({pos.x + 1, pos.y});
+    moves.push_back({pos.x - 1, pos.y});
+    moves.push_back({pos.x, pos.y + 1});
+    moves.push_back({pos.x, pos.y - 1});
+
+    // remove the moves that are out of the board and the moves that are blocked by other pieces
+    for (int i = 0; i < moves.size(); i++) {
+        if (moves[i].x < 0 || moves[i].x > 7 || moves[i].y < 0 || moves[i].y > 7) 
+        {
+            moves.erase(moves.begin() + i);
+            i--;
+        } else if (board.table[moves[i].x][moves[i].y] != 0) {
+            if (board.checkTurn(board.table[moves[i].x][moves[i].y])) kills.push_back(moves[i]);
+            moves.erase(moves.begin() + i);
+            i--;
+        }
+    }
+
+    /*vector<Pos> all_moves = getAllMovesE(board);
+    for (int i = 0; i < all_moves.size(); i++) {
+        for (int j = 0; j < moves.size(); j++) {
+            if (all_moves[i].x == moves[j].x && all_moves[i].y == moves[j].y) {
+                moves.erase(moves.begin() + j);
+                j--;
+            }
+        }
+    }*/
+    
+    // Add king castling moves if the way is clear
+    if (board.table[5][pos.y] == 0 && board.table[6][pos.y] == 0 && (board.getTurn() == 1 ? board.petit_roque_B : board.petit_roque_N)) {
+        moves.push_back({6, pos.y});
+    }
+    if (board.table[3][pos.y] == 0 && board.table[2][pos.y] == 0 && board.table[1][pos.y] == 0 && (board.getTurn() == 1 ? board.grand_roque_B : board.grand_roque_N)) {
+        moves.push_back({2, pos.y});
+    }
 }
 
 void Piece::getMoves(Board board)
@@ -220,7 +368,7 @@ void Piece::getMoves(Board board)
             break;
         case 6:
             // King
-
+            addKingMoves(pos, board);
             break;
         default:
             break;

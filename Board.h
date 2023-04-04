@@ -2,15 +2,19 @@
 #define BOARD_H
 
 #pragma once
-
 struct Pos
 {
     int x;
     int y;
 };
 
+#include <algorithm>
 #include<vector>
 #include <utility>
+
+using namespace std;
+
+
 
 // The chess board
 class Board
@@ -25,12 +29,18 @@ public:
     bool checkTurn(int);
 private:
     // The board
-    std::vector<std::vector<int>> table;
+    vector<vector<int>> table;
     int turn = 1;
     friend class Piece;
     friend void displayBoard(Board);
     friend void showMoves(Board);
-    std::pair<int, Pos> p_one_pieces[16];
+    bool petit_roque_B = 1;
+    bool grand_roque_B = 1;
+    bool petit_roque_N = 1;
+    bool grand_roque_N = 1;
+
+    bool n_check=false;
+    bool b_check=false;
 };
 
 #include"Board.cpp"
