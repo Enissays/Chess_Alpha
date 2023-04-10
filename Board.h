@@ -41,6 +41,11 @@ private:
 
     bool n_check=false;
     bool b_check=false;
+
+    Pos en_passant = { -1,-1 };
+    Pos en_passant_killed = { -1,-1 };
+    int en_passant_id = 0;
+    int count = 0;
 };
 
 #include"Board.cpp"

@@ -62,6 +62,13 @@ int LetterToPiece(char letter)
 }
 void displayBoard(Board board)
 {
+    // affiche si un en passant est possible
+    if (board.en_passant.x != -1) {
+        cout << "En passant possible en " << (char)(board.en_passant.x + 97) << 8 - board.en_passant.y << endl;
+    }
+    else {
+        cout << "Pas d'en passant possible" << endl;
+    }
     cout << "Tour actuel : " << (board.getTurn() == 1 ? "blanc" : "\033[30m noir \033[0m") << endl << endl;
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -132,8 +139,10 @@ int main()
         startPos.x = convertFromLetterToNumber(start[0]);
         startPos.y = 8 - (start[1] - '0');
         
-
-
+        if (start[0] < 97 || start[0] > 104 || start[1] < 49 || start[1] > 56) {
+            cout << "Position invalide" << endl;
+            continue;
+        }
         
         // Check the moves for the piece
         Piece piece(board.getPiece(startPos.x, startPos.y), startPos.x, startPos.y);
@@ -143,6 +152,8 @@ int main()
             continue;
         }
         piece.getMoves(board);
+
+
         if (start[2] == '-') showMoves(piece, board);
         
         cout << "-> ";

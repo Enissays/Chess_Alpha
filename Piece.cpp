@@ -39,6 +39,16 @@ Pos Piece::getPos()
 
 void Piece::setPos(Pos pos, Board &board)
 {
+    // Vérifie si le joueur essaie d'attraper l'en passant
+    if (board.en_passant_killed.x == pos.x && board.en_passant_killed.y == pos.y) {
+        board.setPiece(board.en_passant.x, board.en_passant.y, 0);
+        board.setPiece(pos.x, pos.y, id);
+        board.setPiece(this->pos.x, this->pos.y, 0);
+        this->pos = pos;
+        board.en_passant = { -1,-1 };
+        board.en_passant_killed = { -1,-1 };
+        board.en_passant_id = 0;
+    }
     // Vérifie si le roi a bougé et changer la valeur de petit_roque_B et grand_roque_B ou petit_roque_N et grand_roque_N
 
 
@@ -90,48 +100,63 @@ void Piece::setPos(Pos pos, Board &board)
         }
     }
     // Vérifie si la tour a bougé et changer la valeur de petit_roque_B ou petit_roque_N
-    else if (id == 4) {
-        if (pos.x == 0) {
-            board.grand_roque_B = 0;
-        }
-        if (pos.x == 7) {
-            board.petit_roque_B = 0;
-        }
+    else if (id == 2) {
+        if (pos.x == 0) board.grand_roque_B = 0;
+        if (pos.x == 7) board.petit_roque_B = 0;
+        board.setPiece(pos.x, pos.y, id);
     }
-    else if (id == -4) {
-        if (pos.x == 0) {
-            board.grand_roque_N = 0;
-        }
-        if (pos.x == 7) {
-            board.petit_roque_N = 0;
-        }
+    else if (id == -2) {
+        if (pos.x == 0) board.grand_roque_N = 0;
+        if (pos.x == 7) board.petit_roque_N = 0;
+        board.setPiece(pos.x, pos.y, id);
     }
-    else if ((id == 1 || id == -1) && (pos.y == 0 || pos.y == 7)) {
+    else if ((id == 1 || id == -1)) {
+        // If the pawn has moved two squares and is in the starting position, it can be captured en passant
+        if (pos.y - this->pos.y == 2 && this->pos.y == 1) {
+            board.en_passant = pos;
+            board.en_passant_id = 1;
+            board.en_passant_killed = {this->pos.x, this->pos.y + 1};
+            board.count = 2;
+        } else if (pos.y - this->pos.y == -2 && this->pos.y == 6) {
+            board.en_passant = pos;
+            board.en_passant_id = -1;
+            board.en_passant_killed = {this->pos.x, this->pos.y - 1};
+            board.count = 2;
+        }
 
+        if (pos.y == 0 || pos.y == 7) {
            char choice;
            cout << "En quoi voulez-vous promouvoir votre pion ? (Q/R/C/B)" << endl;
            cin >> choice;
               switch (choice) {
-                case 'Q':
-                     id = 5;
+                case 'Q': id = 5;
                      break;
-                case 'R':
-                     id = 4;
+                case 'R': id = 4;
                      break;
-                case 'C':
-                     id = 3;
+                case 'C': id = 3;
                      break;
-                case 'B':
-                     id = 2;
+                case 'B': id = 2;
                      break;
               }
             board.setPiece(pos.x, pos.y, id*board.getTurn());
             cout << "Le pion a été promu en " << choice << endl;
             getchar();
+        }
+        board.setPiece(pos.x, pos.y, id);
     } else {
         board.setPiece(pos.x, pos.y, id);
     }
     this->pos = pos;
+
+    if (board.count != 0)
+        board.count--;
+    else 
+    {
+        // removes the en passant square
+        board.en_passant = {-1,-1};
+        board.en_passant_id = 0;
+        board.en_passant_killed = {-1,-1};
+    }
 }
 
 void Piece::addPawnMoves(Pos mv, Board board)
@@ -148,6 +173,14 @@ void Piece::addPawnMoves(Pos mv, Board board)
         moves.push_back({pos.x, pos.y + (-1*board.turn)});
     }
 
+    // check if the en passant square is in the pawn's range
+    if (board.en_passant_killed.x == pos.x + 1 || board.en_passant_killed.x == pos.x - 1) {
+        if (board.en_passant_killed.y == pos.y + (-1*board.turn)) {
+            kills.push_back({board.en_passant_killed.x, board.en_passant_killed.y});
+        }
+    }
+
+
     // check if there's an ennemy piece on the four diagonal squares
     if (pos.x != 0) {
         if (board.table[pos.x - 1][pos.y + (-1*board.turn)] != 0) {
@@ -155,7 +188,7 @@ void Piece::addPawnMoves(Pos mv, Board board)
                 kills.push_back({pos.x - 1, pos.y + (-1*board.turn)});
             }
         }
-    } 
+    }
     if (pos.x != 7) {
         if (board.table[pos.x + 1][pos.y + (-1*board.turn)] != 0) {
             if (!board.checkTurn(board.table[pos.x + 1][pos.y + (-1*board.turn)])) {
@@ -377,9 +410,16 @@ void Piece::getMoves(Board board)
 
 bool Piece::checkMove(Pos move, Board board)
 {
+    // Check if the move is in the moves vector
     for (int i = 0; i < moves.size(); i++) {
         if (moves[i].x == move.x && moves[i].y == move.y) return true;
     }
+
+    // Check if the move is in the kills vector
+    for (int i = 0; i < kills.size(); i++) {
+        if (kills[i].x == move.x && kills[i].y == move.y) return true;
+    }
+
     return false;
 }
 
