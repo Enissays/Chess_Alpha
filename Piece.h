@@ -23,8 +23,8 @@ public:
     void addKnightMoves(Pos, Board);
     void addBishopMoves(Pos, Board);
     void addQueenMoves(Pos, Board);
-    void addKingMoves(Pos, Board);
-    void getMoves(Board);
+    void addKingMoves(Pos, Board, bool);
+    void getMoves(Board, bool);
     void showMoves(Board);
 
     // Function to get all moves of a board

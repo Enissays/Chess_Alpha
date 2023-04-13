@@ -17,7 +17,7 @@ Régles avancés :
     - Promotion
     - Prise en passant
     - Roque (petit/grand)
-
+    - Clouage
 */
 
 char PieceToLetter(int p)
@@ -73,7 +73,7 @@ void displayBoard(Board board)
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             // display the line number in red
-            if (j == 0) {
+         if (j == 0) {
                 cout << "\033[31m" << 8 - i << "\033[0m ";
             }
             int p=board.getPiece(j, i);
@@ -151,7 +151,7 @@ int main()
             cout << "(Pas de pion vous appartenant.)" << endl;
             continue;
         }
-        piece.getMoves(board);
+        piece.getMoves(board, false);
 
 
         if (start[2] == '-') showMoves(piece, board);

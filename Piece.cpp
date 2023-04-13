@@ -23,8 +23,8 @@ vector<Pos> Piece::getAllMovesE(Board board) {
         for (int j = 0; j < 8; j++) {
             if (board.table[i][j] != 0) {
                 if (!board.checkTurn(board.table[i][j])) {
-                    Piece piece(i, j, board.table[i][j]);
-                    piece.getMoves(board);
+                    Piece piece(board.table[i][j], i, j);
+                    piece.getMoves(board, true);
                     moves.insert(moves.end(), piece.moves.begin(), piece.moves.end());
                 }
             }
@@ -331,7 +331,7 @@ void Piece::addQueenMoves(Pos pos, Board board)
     addBishopMoves(pos, board);
 }
 
-void Piece::addKingMoves(Pos pos, Board board)
+void Piece::addKingMoves(Pos pos, Board board, bool checks)
 {
     moves.push_back({pos.x + 1, pos.y + 1});
     moves.push_back({pos.x + 1, pos.y - 1});
@@ -355,7 +355,9 @@ void Piece::addKingMoves(Pos pos, Board board)
         }
     }
 
-    /*vector<Pos> all_moves = getAllMovesE(board);
+    if (!checks) 
+    {
+    vector<Pos> all_moves = getAllMovesE(board);
     for (int i = 0; i < all_moves.size(); i++) {
         for (int j = 0; j < moves.size(); j++) {
             if (all_moves[i].x == moves[j].x && all_moves[i].y == moves[j].y) {
@@ -363,7 +365,8 @@ void Piece::addKingMoves(Pos pos, Board board)
                 j--;
             }
         }
-    }*/
+    }
+    }
     
     // Add king castling moves if the way is clear
     if (board.table[5][pos.y] == 0 && board.table[6][pos.y] == 0 && (board.getTurn() == 1 ? board.petit_roque_B : board.petit_roque_N)) {
@@ -374,7 +377,7 @@ void Piece::addKingMoves(Pos pos, Board board)
     }
 }
 
-void Piece::getMoves(Board board)
+void Piece::getMoves(Board board, bool checks)
 {
     int check_id = id;
     if (id < 0) check_id = -id;
@@ -401,7 +404,7 @@ void Piece::getMoves(Board board)
             break;
         case 6:
             // King
-            addKingMoves(pos, board);
+            addKingMoves(pos, board, checks);
             break;
         default:
             break;
