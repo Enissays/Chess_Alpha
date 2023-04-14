@@ -1,8 +1,8 @@
 #include<iostream>
 #include<string>
 #include<vector>
-#include"Board.h"
 #include"Piece.h"
+#include"Board.h"
 
 using namespace std;
 
@@ -19,6 +19,8 @@ Régles avancés :
     - Roque (petit/grand)
     - Clouage
 */
+
+
 
 char PieceToLetter(int p)
 {

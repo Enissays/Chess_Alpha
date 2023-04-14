@@ -1,9 +1,9 @@
 #ifndef PIECE_H
 #define PIECE_H
+#include"Board.h"
 
 #pragma once
 #include<vector>
-#include"Board.h"
 
 
 class Piece
@@ -18,11 +18,11 @@ public:
     bool checkMove(Pos, Board);
 
     // Function for each type of piece that adds the possible moves to the vector
-    void addPawnMoves(Pos, Board);
-    void addRookMoves(Pos, Board);
-    void addKnightMoves(Pos, Board);
-    void addBishopMoves(Pos, Board);
-    void addQueenMoves(Pos, Board);
+    void addPawnMoves(Pos, Board, bool);
+    void addRookMoves(Pos, Board, bool);
+    void addKnightMoves(Pos, Board, bool);
+    void addBishopMoves(Pos, Board, bool);
+    void addQueenMoves(Pos, Board, bool);
     void addKingMoves(Pos, Board, bool);
     void getMoves(Board, bool);
     void showMoves(Board);

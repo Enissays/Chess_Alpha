@@ -1,6 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include"Piece.h"
+
 #pragma once
 struct Pos
 {
@@ -13,9 +15,7 @@ struct Pos
 #include <utility>
 
 using namespace std;
-
-
-
+class Piece;
 // The chess board
 class Board
 {
