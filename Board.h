@@ -27,6 +27,7 @@ public:
     int getPiece(int, int);
     void setPiece(int, int, int);
     bool checkTurn(int);
+    bool getCheckMate();
 private:
     // The board
     vector<vector<int>> table;
@@ -46,6 +47,8 @@ private:
     Pos en_passant_killed = { -1,-1 };
     int en_passant_id = 0;
     int count = 0;
+
+    bool checkMate = false;
 };
 
 #include"Board.cpp"

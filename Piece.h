@@ -36,6 +36,7 @@ private:
     std::vector <Pos> kills;
     friend void showMoves(Piece, Board);
     friend class Board;
+    friend bool checkCheckMate(Board);
 };
 
 #include"Piece.cpp"

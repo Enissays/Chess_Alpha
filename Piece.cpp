@@ -22,6 +22,41 @@ bool checkCheck(Board board, int turn)
     return false;
 }
 
+bool checkCheckMate(Board board)
+{
+    // Checks if the king is in checkmate
+    // Will get each opponent's piece by exploring the board, get its moves, check if both moves and kills are empty
+    // If no move is possible, returns true
+    // else returns false
+    int turn = board.getTurn();
+    int opponent = -turn;
+    board.switchTurn();
+        // Get all the opponent's pieces
+        vector<Pos> opponent_pieces;
+        Pos pos;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                pos.x = i;
+                pos.y = j;
+                if (board.getPiece(i, j) * turn < 0) {
+                    opponent_pieces.push_back(pos);
+                }
+            }
+        }
+        // For each piece, get its moves and kills
+        // If both are empty, checkmate = true
+        // else checkmate = false
+    
+        for (int i = 0; i < opponent_pieces.size(); i++) {
+            Piece piece(board.getPiece(opponent_pieces[i].x, opponent_pieces[i].y), opponent_pieces[i].x, opponent_pieces[i].y);
+            piece.getMoves(board, false);
+            if (piece.moves.size() != 0 || piece.kills.size() != 0) {
+                return false;
+            }
+        }
+        return true;
+}
+
 Piece::Piece(int id, int x, int y)
 {
     this->id = id;
@@ -175,11 +210,29 @@ void Piece::setPos(Pos pos, Board &board)
         board.count--;
     else 
     {
+
         // removes the en passant square
         board.en_passant = {-1,-1};
         board.en_passant_id = 0;
         board.en_passant_killed = {-1,-1};
     }
+        bool opponent_check = false;
+        // Creates a board copy with the new move, and checks if the opponent king is in check
+        Board board_copy = board;
+        board_copy.setPiece(pos.x, pos.y, id);
+        getMoves(board_copy, true);
+        // checks if the opponent king is in one of the kill moves
+        for (int i = 0; i < kills.size(); i++) {
+            if (board_copy.table[kills[i].x][kills[i].y] == (board_copy.getTurn() == -1 ? 6 : -6)) {
+                opponent_check = true;
+                break;
+            }
+        }
+
+        if (opponent_check) 
+        {
+            board.checkMate = checkCheckMate(board_copy);
+        }
 }
 
 void Piece::addPawnMoves(Pos mv, Board board, bool checks)
@@ -492,6 +545,8 @@ void Piece::getMoves(Board board, bool checks)
                 i--;
             }
         }
+
+
     }
 }
 

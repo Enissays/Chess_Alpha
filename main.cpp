@@ -171,6 +171,11 @@ int main()
         board.setPiece(startPos.x, startPos.y, 0);
         board.switchTurn();
         displayBoard(board); 
+        if (board.getCheckMate()) 
+        {
+            cout << "Echec et mat !" << endl;
+            break;
+        }
     } while (true);
     return 0;
 }
