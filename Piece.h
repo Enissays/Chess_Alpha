@@ -40,4 +40,5 @@ private:
 };
 
 #include"Piece.cpp"
+#include"Piece_moves.cpp"
 #endif
